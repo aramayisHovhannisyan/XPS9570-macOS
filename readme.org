@@ -1,1 +1,27 @@
 Dell Precision 5530
+* Hardware	
+** Graphics	
+Integrated Intel UHD Graphics 630 support is handled by [[https://github.com/acidanthera/WhateverGreen][WhateverGreen]], and configured in the	
+=PciRoot(0x0)/Pci(0x2,0x0)= section of config.plist. The Nvidia GPU is not supported due to hardware	
+differences and lack of driver support in macOS. It is disabled to save power.	
+
+Choose a DPCD maximum link rate for your display, where 4K=0x14 (default) or 1080p=0x0a.	
+
+To determine if Intel GPU (IGPU) acceleration is working, check: =About This Mac -> Intel UHD Graphics 630	
+1536 MB=. A value less than 1536MB indicates a problem (e.g. 7MB or 31MB are common).	
+
+The default BIOS DVMT pre-alloc value of 64MB is sufficient and does not need to be changed.	
+
+The IGPU supports [[https://www.intel.com/content/www/us/en/support/articles/000025672/graphics-drivers.html][up to 3 displays]] simultaneously, including the internal LCD. The type C port	
+supports up to two DisplayPort connections with an adapter. Even though you could connect three	
+external displays (HDMI + 2 DisplayPort via type C), one of these displays would remain powered	
+off. This is a limitation of IGPU, which has 3 pipelines for driving displays, one per display.	
+*** Enabling acceleration	
+- [[file:EFI/CLOVER/config.plist][config.plist]]	
+  - =Graphics/Inject/Intel=no=	
+  - =Devices/Properties/PciRoot(0x0)/Pci(0x2,0x0)=	
+    - =AAPL,ig-platform-id = <00009b3e>=	
+    - =device-id =<9b3e0000>=	
+    - =dpcd-max-link-rate =<14000000>= (or =<0a000000>= for 1080p)	
+    - =enable-dpcd-max-link-rate-fix =<01000000>=	
+    - =framebuffer-patch-enable =<01000000>=
